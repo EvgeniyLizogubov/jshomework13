@@ -40,6 +40,7 @@ public class Controller implements Initializable {
     };
     
     private int currentQuestion = 0;
+    private int correctAnswerCount = 0;
     
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -51,24 +52,38 @@ public class Controller implements Initializable {
     }
     
     public void tryToAnswer() {
-        if (((RadioButton) answers.getSelectedToggle()).getText().equals(correctVariants[currentQuestion])) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Правильно!");
+        if (answers.getSelectedToggle() == null) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Выберите один из вариантов.");
             alert.showAndWait();
-            
-            if (currentQuestion == 2) {
-                currentQuestion = 0;
-            } else {
-                currentQuestion++;
-            }
-            
-            questionArea.setText(questions[currentQuestion]);
-            answer1.setText(variants[currentQuestion][0]);
-            answer2.setText(variants[currentQuestion][1]);
-            answer3.setText(variants[currentQuestion][2]);
-            answer4.setText(variants[currentQuestion][3]);
+            return;
+        }
+        
+        if (((RadioButton) answers.getSelectedToggle()).getText().equals(correctVariants[currentQuestion])) {
+            correctAnswerCount++;
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Правильно!");
+            alert.showAndWait();
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Не правильно!");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Не правильно!");
             alert.showAndWait();
         }
+        
+        if (currentQuestion == 2) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                    "По результатам тестирования вы набрали " + correctAnswerCount + " баллов. Хотите попробовать ещё раз?");
+            alert.showAndWait();
+            if (alert.getResult().getText().equals("OK")) {
+                currentQuestion = 0;
+            } else {
+                questionArea.getScene().getWindow().hide();
+            }
+        } else {
+            currentQuestion++;
+        }
+        
+        questionArea.setText(questions[currentQuestion]);
+        answer1.setText(variants[currentQuestion][0]);
+        answer2.setText(variants[currentQuestion][1]);
+        answer3.setText(variants[currentQuestion][2]);
+        answer4.setText(variants[currentQuestion][3]);
     }
 }
